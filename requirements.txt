@@ -1,0 +1,8 @@
+munch==3.0.0
+natsort==8.4.0
+numpy==1.24.3
+pandas==2.0.2
+plotly==5.15.0
+PyYAML==6.0
+scipy==1.11.1
+tqdm==4.65.0
