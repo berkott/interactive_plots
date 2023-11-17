@@ -4,7 +4,6 @@ import re
 import itertools
 import pathlib
 import numpy as np
-import torch
 # from utils.samplers import NormalMeansSampler
 # from utils.baseline_models import BayesOptimalPredictor, PrettyGoodPredictor, OraclePredictor
 from tqdm import tqdm
