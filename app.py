@@ -6,7 +6,6 @@ import pathlib
 import numpy as np
 # from utils.samplers import NormalMeansSampler
 # from utils.baseline_models import BayesOptimalPredictor, PrettyGoodPredictor, OraclePredictor
-from tqdm import tqdm
 
 import plotly.graph_objects as go
 from dash import Dash, html, dcc
@@ -20,7 +19,6 @@ def plot_saved_sigma_data(model_save_path):
             train_step = int(re.sub("[^0-9]", "", model_step.name.split("_")[-1]))
 
             frame_data_dict = {}
-
 
             frame_data_dict["oracle"] = oracle
             frame_data_dict["james_stein"] = james_stein
@@ -215,8 +213,13 @@ def plot_differences_to_models_mu(model_save_path):
     model_signature = model_save_path.split('/')[-1]
     model_name = model_signature.split('-')[0]
     model_params = {model_arg.split('=')[0]: model_arg.split('=')[1] for model_arg in model_signature.split('-')[1:]}
-    keys_to_show = ("plotting_type", "pretraining_mu_tasks", "hid_dim", "layer", "head")
-    model_params = {key: model_params[key] for key in model_params if key in keys_to_show}
+    try:
+        keys_to_show = ("plotting_type", "pretraining_mu_tasks", "hid_dim", "layer", "head", "default_sigma")
+        model_params = {key: model_params[key] for key in model_params if key in keys_to_show}
+    except:
+        keys_to_show = ("plotting_type", "pretraining_mu_tasks", "hid_dim", "layer", "head")
+        model_params = {key: model_params[key] for key in model_params if key in keys_to_show}
+
 
     fig_dict["layout"]["title"] = {"text": f"Differences mu {model_name}<br><sup>{str(model_params)}</sup>"}
     fig_dict["layout"]["xaxis"] = {"title": "Epochs"}
@@ -349,7 +352,7 @@ app = Dash(
 
 server = app.server
 
-model_dir = "models"
+model_dir = "models/first_good_run"
 
 sigma_dirs = [dir.path for dir in os.scandir(model_dir) if dir.is_dir() and dir.path.split('/')[-1].split('-')[1][14:] == "sigma"]
 mu_dirs = [dir.path for dir in os.scandir(model_dir) if dir.is_dir() and dir.path.split('/')[-1].split('-')[1][14:] == "mu"]
