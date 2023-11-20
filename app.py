@@ -352,7 +352,7 @@ app = Dash(
 
 server = app.server
 
-model_dir = "models/first_good_run"
+model_dir = "models/maybe_good_run_1"
 
 sigma_dirs = [dir.path for dir in os.scandir(model_dir) if dir.is_dir() and dir.path.split('/')[-1].split('-')[1][14:] == "sigma"]
 mu_dirs = [dir.path for dir in os.scandir(model_dir) if dir.is_dir() and dir.path.split('/')[-1].split('-')[1][14:] == "mu"]
