@@ -7,7 +7,10 @@ import plotly.graph_objects as go
 from dash import Dash, dcc, html, Input, Output,callback
 import dash_bootstrap_components as dbc
 
-MODEL_DIR = "models/good_sweep_1"
+# MODEL_DIR = "models/shape_models"
+# MODEL_DIR = "models/good_sweep_1_fixed_256"
+MODEL_DIR = "models/sigma_sweep"
+# MODEL_DIR = "models/rerun_explosions"
 
 # === Plotting ===
 def plot_differences_to_models_mu(model_save_path):
@@ -62,7 +65,7 @@ def plot_differences_to_models_mu(model_save_path):
     model_signature = model_save_path.split('/')[-1]
     model_name = model_signature.split('-')[0]
     model_params = {model_arg.split('=')[0]: model_arg.split('=')[1] for model_arg in model_signature.split('-')[1:]}
-    keys_to_show = ("pretraining_mu_tasks", "hid_dim", "layer", "head", "default_sigma")
+    keys_to_show = ("pretraining_mu_tasks", "hid_dim", "layer", "head", "default_sigma", "lr", "wd")
     model_params = {key: model_params[key] for key in model_params if key in keys_to_show}
 
     fig_dict["layout"]["title"] = {"text": f"Differences mu {model_name}<br><sup>{str(model_params)}</sup>"}
@@ -102,12 +105,20 @@ def get_settings_table():
 def update_dropdowns(mu_dropdown_value, hidden_dim_dropdown_value):
     if mu_dropdown_value == "continuous":
         return []
-    
-    mu_dirs = [dir.path for dir in os.scandir(MODEL_DIR) 
-               if dir.is_dir() and 
-               dir.path.split('/')[-1].split('-')[1][14:] == "mu" and 
-               dir.path.split('/')[-1].split('-')[5][21:] == str(mu_dropdown_value) and 
-               dir.path.split('/')[-1].split('-')[8][8:] == str(hidden_dim_dropdown_value)]
+
+    mu_dirs = []
+
+    for dir in os.scandir(MODEL_DIR):
+        model_signature = dir.path.split('/')[-1]
+        model_params = {model_arg.split('=')[0]: model_arg.split('=')[1] for model_arg in model_signature.split('-')[1:]}
+        if model_params["plotting_type"] == "mu" and model_params["pretraining_mu_tasks"] == str(mu_dropdown_value) and model_params["hid_dim"] == str(hidden_dim_dropdown_value):
+            mu_dirs.append(dir.path)
+
+    # mu_dirs = [dir.path for dir in os.scandir(MODEL_DIR) 
+    #            if dir.is_dir() and 
+    #            dir.path.split('/')[-1].split('-')[1][14:] == "mu" and 
+    #            dir.path.split('/')[-1].split('-')[5][21:] == str(mu_dropdown_value) and 
+    #            dir.path.split('/')[-1].split('-')[8][8:] == str(hidden_dim_dropdown_value)]
     
     return html.Div(
         list(itertools.chain(*zip(
