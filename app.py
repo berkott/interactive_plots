@@ -8,8 +8,8 @@ from dash import Dash, dcc, html, Input, Output,callback
 import dash_bootstrap_components as dbc
 
 # MODEL_DIR = "models/shape_models"
-# MODEL_DIR = "models/good_sweep_1_fixed_256"
-MODEL_DIR = "models/sigma_sweep"
+MODEL_DIR = "models/good_sweep_1_fixed_256"
+# MODEL_DIR = "models/sigma_sweep"
 # MODEL_DIR = "models/rerun_explosions"
 
 # === Plotting ===
@@ -109,6 +109,8 @@ def update_dropdowns(mu_dropdown_value, hidden_dim_dropdown_value):
     mu_dirs = []
 
     for dir in os.scandir(MODEL_DIR):
+        if "lol" in dir.path:
+            continue
         model_signature = dir.path.split('/')[-1]
         model_params = {model_arg.split('=')[0]: model_arg.split('=')[1] for model_arg in model_signature.split('-')[1:]}
         if model_params["plotting_type"] == "mu" and model_params["pretraining_mu_tasks"] == str(mu_dropdown_value) and model_params["hid_dim"] == str(hidden_dim_dropdown_value):
